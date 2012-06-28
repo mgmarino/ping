@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ping</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+	<script src="vendor/couchapp/loader.js"></script>
+	<script src="ping.js"></script>
+	
+  </head>
+  <body>
+	<div id="main"></div>
+	<h1> Send a Ping </h1>
+	<input type=button value="Ping" onClick="sendping()">
+	<input type=button value="Show Pongs" onClick="checkdocs()">
+	<div id="status">
+		<h3> Successful Ping! </h3>
+		<p> A Ping was sent to the Database </p>
+	</div>	
+	<div id="pongs"></div>
+	
+  </body>
+
+
+</html>
