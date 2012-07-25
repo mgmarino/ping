@@ -1,4 +1,6 @@
 db = $.couch.db("ping");
+var runDocs = false;
+var timeOutID = 0;
 
 function sendping(){
 	doc = new Object;
@@ -32,6 +34,19 @@ function replaceButtonText(buttonId, text)
       }
     }
   }
+}
+
+function toggleCheckDocs() {
+	if (runDocs) {
+		runDocs = false;
+		$("#pongs").empty();
+		replaceButtonText("ShowButton", "Show Pongs");	
+		if (timeOutID != 0) clearInterval( timeOutID );
+		return;
+	}
+	runDocs = true;
+	replaceButtonText("ShowButton", "Hide Pongs");
+	timeOutID = setInterval("checkdocs()", 500);
 }
 
 function checkdocs(){
