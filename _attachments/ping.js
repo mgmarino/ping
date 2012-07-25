@@ -1,6 +1,7 @@
 db = $.couch.db("ping");
 var runDocs = false;
 var timeOutID = 0;
+var length = 0;
 
 function sendping(){
 	doc = new Object;
@@ -36,26 +37,35 @@ function replaceButtonText(buttonId, text)
   }
 }
 
+function hideDiv(){
+	document.getElementById("pongs").style.visibility = 'hidden';
+}
+function showDiv(){
+	document.getElementById("pongs").style.visibility = 'visible';
+}
+
 function toggleCheckDocs() {
 	if (runDocs) {
 		runDocs = false;
-		$("#pongs").empty();
+		hideDiv();
 		replaceButtonText("ShowButton", "Show Pongs");	
 		if (timeOutID != 0) clearInterval( timeOutID );
 		return;
 	}
 	runDocs = true;
+	showDiv();
 	replaceButtonText("ShowButton", "Hide Pongs");
 	timeOutID = setInterval("checkdocs()", 500);
 }
 
 function checkdocs(){
-	$("#pongs").empty();
-	
 	db.view("Ping/pong", {success: function(data) {
 		for (i in data.rows) {
-			$("#pongs").append("<p>" + data.rows[i].value.name + " " + data.rows[i].value.answer + " " + data.rows[i].value.created_at + "</div>"+"</p>"
+			if (i < length) continue; 
+			var temp = data.rows[i].value;
+			$("#pongs").append("<p>" + temp.name + " " + temp.answer + " " + temp.created_at + "</div>"+"</p>"
 			);
+			length++;
 		}
 	}})
 	
