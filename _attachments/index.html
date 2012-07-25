@@ -1,23 +1,86 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ping</title>
+    <title>HW Communication</title>
     <link rel="stylesheet" href="style/main.css" type="text/css">
 	<script src="vendor/couchapp/loader.js"></script>
 	<script src="ping.js"></script>
+	<script src="js/highcharts.js"></script>
+	<script src="js/modules/exporting.js"></script>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
 	
   </head>
   <body>
 	<div id="main"></div>
-	<h1> Send a Ping </h1>
-	<input type=button value="Ping" onClick="sendping()">
-	<input type=button id ="ShowButton" value="Show Pongs" onClick="toggleCheckDocs()">
+	<h1> Communication Test </h1>
+	<P>Center Value: <input type="text" id="value"><BR><BR>
+	<P>Spread: <input type="text" id="spread"><BR><BR>
+
+	<input type=button id = "SetValues" value="Set Values" onClick="sendValues()">
+	<input type=button id ="Kill" value="End DAQ program" onClick="killProgram()">
+	<input type=button id ="Reset" value="Reset" onClick="location.reload(true)()">
 	<div id="status">
 		<h3> Successful Ping! </h3>
 		<p> A Ping was sent to the Database </p>
 	</div>	
 	<div id="pongs"></div>
-	
+	<script type="text/javascript">
+$(function () {
+    $(document).ready(function() {
+        var chart;
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                type: 'spline',
+                marginRight: 10,
+                events: {
+                    load: function() {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+			var chart = this;
+                        setInterval(function() {
+                            getNewData(series, chart); 
+                        }, 1000);
+                    }
+                }
+            },
+            title: {
+                text: 'Live data'
+            },
+            xAxis: {
+                type: 'linear',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: "'Measured' data",
+                data: []
+            }]
+        });
+    });
+    
+});
+		</script>
+
+	<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+	<div id="serverstatus"></div>
+	<script type="text/javascript">
+	</script>
   </body>
 
 

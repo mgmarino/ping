@@ -4,4 +4,7 @@
   // ".*~$"
   // ".*\\.swp$"
   // ".*\\.bak$"
+  ".*\\.DS_Store",
+  "vendor/.DS_Store",
+  "README.*"
 ]

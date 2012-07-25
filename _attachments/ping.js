@@ -2,6 +2,8 @@ db = $.couch.db("ping");
 var runDocs = false;
 var timeOutID = 0;
 var length = 0;
+var currentPlotIndex = 0;
+var canWrite = false;
 
 function sendping(){
 	doc = new Object;
@@ -12,6 +14,35 @@ function sendping(){
 		$("#status").fadeIn();
 		$("#status").fadeOut('slow');
 	}});
+}
+
+function cmdObj() {
+	doc = new Object;
+	doc.name = 'command';
+        doc.type = 'command';
+	doc.args = [];
+	return doc;
+}
+
+function getValOfText(text) {
+	return document.getElementById(text).value;
+}
+
+function killProgram() {
+	var doc = cmdObj();	
+	doc.cmd = 'kill_thread';
+	db.saveDoc(doc);
+}
+
+function sendValues() {
+	var doc = cmdObj();	
+	doc.cmd = 'set_value';
+	doc.args = [getValOfText('value')];
+	db.saveDoc(doc);
+	var doc = cmdObj();	
+	doc.cmd = 'set_spread';
+	doc.args = [getValOfText('spread')];
+	db.saveDoc(doc);
 }
 
 function replaceButtonText(buttonId, text)
@@ -70,8 +101,59 @@ function checkdocs(){
 	}})
 	
 }
+
+function getNewData(appendList, chart) {
+	db.view("Ping/readout", {
+		success: function(data) {
+			for (var i in data.rows) {
+				var temp = data.rows[i].value;
+				appendList.addPoint([temp[0], temp[1]], false, (appendList.data.length > 40));
+			}
+			if (data.rows.length > 0) {
+				currentPlotIndex = data.rows[data.rows.length-1].value[0]+1;
+				chart.redraw()
+			}
+		},
+		startkey: currentPlotIndex 
+		
+	})
+
+}
 	
+function init() {
+	db.openDoc("host", {
+		success: function(data) {
+			canWrite = (location.hostname == data.host);
+			if (!canWrite) {
+				document.getElementById("Kill").disabled = true;	
+				document.getElementById("SetValues").disabled = true;	
+				document.getElementById("value").disabled = true;	
+				document.getElementById("spread").disabled = true;	
+				var str = "Replicated Database";
+				var div = document.getElementById('serverstatus');
+				var elem = document.createTextNode(str);
+				var font = document.createElement("font");
+				font.style.color = "red";
+				font.appendChild(elem);
+				div.appendChild(font);
+			} else {
+				var str = "Control Database";
+				var div = document.getElementById('serverstatus');
+				var elem = document.createTextNode(str);
+				var font = document.createElement("font");
+				font.style.color = "green";
+				font.appendChild(elem);
+				div.appendChild(font);
+			}
+
+		},
+		error: function(data) {
+			console.log(data);	
+		},
+
+	});
+}
 $(document).ready(function() {
-	
 	$('#status').hide();
+	init();
 });
